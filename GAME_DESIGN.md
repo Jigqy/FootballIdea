@@ -136,10 +136,49 @@ Live inside the RNG outcome bands rather than as a separate system — e.g. a
 "disaster" result on Deep Pass vs. Blitz carries an interception chance, a
 stuffed Run in short yardage carries a small fumble chance.
 
+## Card Rarity & Packs
+
+Four rarity tiers at launch (more may be added later as a live-service
+expansion — e.g. a tier above Platinum down the line):
+
+- **Bronze** — baseline stats, bulk of a starting roster.
+- **Silver** — modest stat bump, fills out a functional team.
+- **Gold** — real starters, meaningful stat jump.
+- **Platinum** — top-of-the-ceiling stats, gated behind unlocking
+  rare/personnel-specific plays (e.g. a Platinum speed WR being what gets a
+  team to 4 fast WRs for *Four Verts*).
+
+**Pack types:**
+- **Standard packs** — Bronze/Silver-heavy, bought with soft currency earned
+  from playing (wins weighted more than losses, plus daily/weekly quests).
+- **Position packs** — guarantees a card from a chosen position group,
+  letting players target a specific roster gap (e.g. buying a WR pack
+  specifically to unlock a play that needs one).
+- **Premium packs** — Robux-purchased, better odds at Gold/Platinum.
+- **Event packs** — rotating weekly/seasonal, sometimes with time-limited
+  exclusive Platinum cards.
+- **Coach/Scheme packs** — separate pool for the future playbook-collectible
+  layer, so the card grind and playbook grind don't compete for the same
+  currency.
+
+**Duplicate handling:** dupes convert to upgrade fuel that levels up that
+specific card's stats within its rarity band, and enough dupes at one
+rarity auto-craft one card at the next rarity up.
+
+**Pity system:** guaranteed Gold+ every N packs. Odds should be disclosed
+in-game from day one — Roblox's marketplace policy already requires
+disclosing odds on randomized item purchases.
+
+**Open questions:**
+- Currency structure — one soft currency + Robux-for-premium-packs, or a
+  middle "premium soft currency" layer (earnable slowly for free, but
+  mainly bought)?
+- Trading — player-to-player card trading (real economy, harder to keep
+  fair/scam-free) vs. account-locked cards?
+
 ## Deferred / Open Items
 
 - AI opponent tendency-reading / adaptiveness (explicitly deferred).
-- Ultimate Team card/pack/rarity/chemistry system — next brainstorming
-  pillar.
+- Ultimate Team chemistry system — next brainstorming pillar.
 - Trick-play animation content pipeline (tied to future playbook
   collectibles).
