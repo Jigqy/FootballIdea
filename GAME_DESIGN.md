@@ -210,9 +210,10 @@ Chemistry is purely an **outcome modifier** on the stat-decided matrix
 rolls — it doesn't gate play availability, since that's already handled by
 the personnel-gated plays system. Keeps the two mechanics from overlapping.
 
-**Deferred:** Team/Set bonus (amplified chemistry when linked cards share a
-fictional team tag) — needs multiple fictional team rosters designed up
-front, so it's a later addition once functional chemistry is proven out.
+**Decided against:** a separate Team/Set bonus (amplified chemistry from
+sharing a fictional team tag). Chemistry stays purely functional — matching
+the system (the 8 named bonds) is the whole mechanic, no team-roster
+dependency needed.
 
 ## Roster Construction
 
@@ -289,9 +290,39 @@ outside their built-in limited-items system. The existing duplicate-fusion
 system (dupes → upgrade fuel / auto-craft, see Card Rarity & Packs)
 already covers the "bad luck protection" itch trading usually solves.
 
+## AI Opponents
+
+**v1 (launch): context-aware, not adaptive.** The AI uses the
+down-and-distance system rather than learning from the player:
+- Short yardage → leans Run / Stack the Box.
+- Long yardage → leans Quick/Medium Pass offensively, mixes Blitz and
+  Zone defensively.
+- Protecting a lead late → leans Zone/Prevent-ish, clock-conscious
+  offensively (fewer Deep Pass calls).
+- Behind late → leans Deep Pass and hurry-up.
+
+Each situation has a "book" (statistically sound) call, taken only ~70% of
+the time — the rest is a weighted mix of alternatives, so the AI isn't
+perfectly predictable once a player learns the pattern.
+
+**Difficulty scaling** — two independent dials as Season Mode progresses:
+(1) the AI roster's raw stats improve team-by-team, and (2) the book/mixed
+ratio tightens (harder AI sticks to the optimal call more often).
+
+**v2 (post-launch): tendency-reading.** The AI tracks the player's
+play-calling history within a game and leans its calls to counter their
+most-used plays (spam Deep Pass → AI leans Blitz). This is also the home
+for a **scouting report** feature — a pre-game readout of an opponent's
+(AI, and eventually PvP) tendencies, turning adaptiveness into a readable,
+counter-playable mechanic rather than a black box.
+
+## Stadiums & Cosmetics
+
+Each team has a slightly different stadium — a lightweight per-team visual
+identity layer alongside team branding, no gameplay effect.
+
 ## Deferred / Open Items
 
-- AI opponent tendency-reading / adaptiveness (explicitly deferred).
-- Team/Set chemistry bonus (needs fictional team rosters built first).
+- Scouting report UI/UX for PvP opponents (tied to AI v2 tendency-reading).
 - Trick-play animation content pipeline (tied to future playbook
   collectibles).
