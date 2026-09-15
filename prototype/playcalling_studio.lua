@@ -1,29 +1,36 @@
 --[[
-	FootballIdea - Play-Calling Prototype
-	=====================================
+	FootballIdea - Play-Calling Prototype (Roblox Studio Command Bar version)
+	==========================================================================
 
-	A single-file, plain-Lua prototype of the core play-calling mechanic
-	described in GAME_DESIGN.md: blind simultaneous calls, resolved by a
-	4x4 matchup matrix + team stats + chemistry + down-and-distance, with
-	no live/twitch skill component.
+	HOW TO RUN: In Roblox Studio, open View > Command Bar, paste this whole
+	script in, and press Enter. Output prints to the Output window
+	(View > Output).
 
-	Run it from a terminal with:
+	Why this is a different file from prototype/playcalling.lua: that one
+	is written for a real terminal (it uses io.read/io.write to prompt you
+	down-by-down). Roblox's Luau sandbox has no io library and the Command
+	Bar can't pause mid-script to wait for typed input - it just runs the
+	whole script front-to-back and prints whatever it prints. So this
+	version auto-simulates the entire game in one go instead of prompting
+	you play-by-play.
 
-		lua5.3 prototype/playcalling.lua
-
-	You play a full "Quick Drive" style match against a CPU opponent
-	(3 possessions each). Whichever team has the ball, YOU make that
-	side's call (offense when you have the ball, defense when the CPU
-	does) so you can feel both sides of the matchup matrix. The CPU always
-	controls the other side, using the v1 context-aware AI logic from the
-	design doc (down/distance-aware, not adaptive yet).
-
-	This file has no Roblox API dependency on purpose - it's meant to
-	prove out the resolution math before any of it touches Roblox/Rojo.
+	To steer YOUR team's calls instead of letting the AI make every
+	decision, fill in USER_OFFENSE_CALLS / USER_DEFENSE_CALLS below before
+	running - they're consumed in order, one per down your team faces on
+	that side of the ball, and the AI fills in once the list runs out.
+	Leave both empty to just watch a full AI vs AI game.
 ]]
 
-math.randomseed(os.time())
-local rng = math.random
+-- EDIT THESE to steer your team's calls, in order. Valid entries:
+--   offense: "run", "quick", "medium", "deep"
+--   defense: "stack_box", "blitz", "man", "zone"
+local USER_OFFENSE_CALLS = {} -- e.g. { "run", "run", "quick", "deep" }
+local USER_DEFENSE_CALLS = {} -- e.g. { "stack_box", "blitz", "zone" }
+
+local rngSource = Random.new()
+local function rng()
+	return rngSource:NextNumber()
+end
 
 --------------------------------------------------------------------------
 -- MATCHUP MATRIX
@@ -43,7 +50,6 @@ local CATEGORY_LABELS = {
 	zone = "Zone Coverage",
 }
 
--- { mean, spread, turnover } - see GAME_DESIGN.md's matchup matrix table.
 local MATCHUP_BASELINE = {
 	run = {
 		stack_box = { mean = 0.5, spread = 2.5, turnover = 0.02 },
@@ -75,7 +81,7 @@ local RELEVANT_STATS = {
 	offense = { run = "runOff", quick = "quickOff", medium = "mediumOff", deep = "deepOff" },
 	defense = { stack_box = "boxDef", blitz = "blitzDef", man = "manDef", zone = "zoneDef" },
 }
-local STAT_SCALE = 0.12 -- yards of mean shift per rating point of differential
+local STAT_SCALE = 0.12
 
 --------------------------------------------------------------------------
 -- DOWN & DISTANCE
@@ -126,7 +132,7 @@ local function getDownDistanceModifier(zone, offenseCategory, defenseCategory)
 end
 
 --------------------------------------------------------------------------
--- CHEMISTRY (the 8 named bonds, scaled not binary)
+-- CHEMISTRY
 --------------------------------------------------------------------------
 
 local CHEMISTRY_BONDS = {
@@ -185,8 +191,6 @@ end
 -- RESOLVER
 --------------------------------------------------------------------------
 
--- Irwin-Hall-style approximation of a bell curve: average a few uniforms
--- and re-center, instead of needing a real Gaussian sampler.
 local function randomSpread(spread)
 	local sum = rng() + rng() + rng()
 	local unit = (sum / 3 - 0.5) * 2
@@ -271,7 +275,7 @@ local cpuTeam = {
 }
 
 --------------------------------------------------------------------------
--- v1 CONTEXT-AWARE AI (down/distance-aware, not adaptive - see GAME_DESIGN.md)
+-- v1 CONTEXT-AWARE AI
 --------------------------------------------------------------------------
 
 local AI_OFFENSE_WEIGHTS = {
@@ -307,53 +311,32 @@ local function aiChooseDefense(zone)
 	return pickWeighted(AI_DEFENSE_WEIGHTS[zone])
 end
 
+-- Pulls the next call from a pre-set list (in order); falls back to the AI
+-- once the list is exhausted or empty. `nextIndex` tables track position.
+local nextIndex = { offense = 1, defense = 1 }
+local function nextUserOffenseCall(zone)
+	local call = USER_OFFENSE_CALLS[nextIndex.offense]
+	nextIndex.offense = nextIndex.offense + 1
+	return call or aiChooseOffense(zone)
+end
+local function nextUserDefenseCall(zone)
+	local call = USER_DEFENSE_CALLS[nextIndex.defense]
+	nextIndex.defense = nextIndex.defense + 1
+	return call or aiChooseDefense(zone)
+end
+
 --------------------------------------------------------------------------
--- CLI HELPERS
+-- FIELD POSITION HELPERS
 --------------------------------------------------------------------------
-
-local function readMenuChoice(max)
-	while true do
-		io.write("> ")
-		io.flush()
-		local line = io.read("*l")
-		if line == nil then
-			print("\nInput closed - ending the game early.")
-			os.exit(1)
-		end
-		local n = tonumber(line)
-		if n and n >= 1 and n <= max then
-			return math.floor(n)
-		end
-		print("  Enter a number from 1 to " .. max .. ".")
-	end
-end
-
-local function promptOffenseCategory()
-	print("  1) Run          2) Quick Pass     3) Medium Pass    4) Deep Pass")
-	local choice = readMenuChoice(4)
-	return OFFENSE_CATEGORIES[choice]
-end
-
-local function promptDefenseCategory()
-	print("  1) Stack the Box 2) Blitz          3) Man Coverage   4) Zone Coverage")
-	local choice = readMenuChoice(4)
-	return DEFENSE_CATEGORIES[choice]
-end
-
-local function describeSituation(offenseName, down, yardsToGo, ballOn)
-	local yardLine = ballOn <= 50 and (offenseName .. " " .. ballOn) or ("OPP " .. (100 - ballOn))
-	print(string.format("\n%s ball, %s down & %d, at %s", offenseName, ({ "1st", "2nd", "3rd", "4th" })[down], yardsToGo, yardLine))
-end
 
 local function flipFieldPosition(ballOn)
 	return math.max(2, math.min(98, 100 - ballOn))
 end
 
--- Where the receiving team starts after a punt, in their own frame.
 local function puntResultBallOn(ballOn)
 	local kickSpot = math.min(ballOn + 40, 98)
 	if kickSpot >= 90 then
-		return 25 -- ball would've gone into the end zone: touchback
+		return 25
 	end
 	return flipFieldPosition(kickSpot)
 end
@@ -366,31 +349,39 @@ local function attemptFieldGoal(ballOn)
 	return good
 end
 
+-- Same heuristic for both sides on 4th down, since neither is interactive here.
+local function decideFourthDown(ballOn, yardsToGo)
+	if ballOn >= 65 then
+		return "fg"
+	elseif yardsToGo <= 2 and ballOn >= 90 then
+		return "go"
+	else
+		return "punt"
+	end
+end
+
 --------------------------------------------------------------------------
--- GAME LOOP (Quick Drive: 3 possessions each)
+-- GAME LOOP (Quick Drive: 3 possessions each, fully auto-simulated)
 --------------------------------------------------------------------------
 
 local POSSESSIONS_PER_TEAM = 3
 local scores = { user = 0, cpu = 0 }
-local nextBallOn = 25 -- kickoff touchback to start the match
+local nextBallOn = 25
 
 print("==================================================================")
-print(" FootballIdea - Play-Calling Prototype")
+print(" FootballIdea - Play-Calling Prototype (Studio auto-sim)")
 print("==================================================================")
-print(("You are calling plays for the %s. The %s (CPU) call the other side."):format(userTeam.name, cpuTeam.name))
-print("You make the call for whichever side has the ball: offense when you")
-print("have it, defense when the CPU does. " .. POSSESSIONS_PER_TEAM .. " possessions each - most points wins.")
+print(("%s vs %s - %d possessions each."):format(userTeam.name, cpuTeam.name, POSSESSIONS_PER_TEAM))
 
 for possessionIndex = 1, POSSESSIONS_PER_TEAM * 2 do
 	local userHasBall = (possessionIndex % 2 == 1)
-	local offenseTeam, defenseTeam
-	local offenseName, defenseName
+	local offenseTeam, defenseTeam, offenseName, defenseName
 	if userHasBall then
 		offenseTeam, defenseTeam = userTeam, cpuTeam
-		offenseName, defenseName = "You", "CPU"
+		offenseName, defenseName = userTeam.name, cpuTeam.name
 	else
 		offenseTeam, defenseTeam = cpuTeam, userTeam
-		offenseName, defenseName = "CPU", "You"
+		offenseName, defenseName = cpuTeam.name, userTeam.name
 	end
 
 	print(string.format("\n---------------- Possession %d/%d: %s ball ----------------", possessionIndex, POSSESSIONS_PER_TEAM * 2, offenseName))
@@ -401,63 +392,36 @@ for possessionIndex = 1, POSSESSIONS_PER_TEAM * 2 do
 	while not possessionOver do
 		local isRedZone = ballOn >= 80
 		local zone = getZone(down, yardsToGo, isRedZone)
-		describeSituation(offenseName, down, yardsToGo, ballOn)
+		local yardLine = ballOn <= 50 and (offenseName .. " " .. ballOn) or ("OPP " .. (100 - ballOn))
+		print(string.format("%s ball, %s down & %d, at %s", offenseName, ({ "1st", "2nd", "3rd", "4th" })[down], yardsToGo, yardLine))
 
 		if down == 4 then
-			local canKick = ballOn >= 65
-			if userHasBall then
-				print("  4th down. What's the call?")
-				print("  1) Punt" .. (canKick and "          2) Field Goal     3) Go for it" or "                             2) Go for it"))
-				local maxChoice = canKick and 3 or 2
-				local choice = readMenuChoice(maxChoice)
-				if choice == 1 then
-					nextBallOn = puntResultBallOn(ballOn)
-					print("  You punt it away.")
-					possessionOver = true
-				elseif (choice == 2 and canKick) then
-					if attemptFieldGoal(ballOn) then
-						scores.user = scores.user + 3
-						nextBallOn = 25
-					else
-						nextBallOn = flipFieldPosition(ballOn)
-					end
-					possessionOver = true
+			local decision = decideFourthDown(ballOn, yardsToGo)
+			if decision == "punt" then
+				nextBallOn = puntResultBallOn(ballOn)
+				print(string.format("  %s punts it away.", offenseName))
+				possessionOver = true
+				break
+			elseif decision == "fg" then
+				if attemptFieldGoal(ballOn) then
+					if userHasBall then scores.user = scores.user + 3 else scores.cpu = scores.cpu + 3 end
+					nextBallOn = 25
+				else
+					nextBallOn = flipFieldPosition(ballOn)
 				end
-				-- choice == "go for it" (2 without kick, or 3 with kick) falls through to a normal play call below
-				if possessionOver then
-					break
-				end
-			else
-				-- Simple CPU heuristic: kick if in range, otherwise punt unless it's very short yardage deep in your territory.
-				if canKick then
-					print("  CPU sends out the kicking unit.")
-					if attemptFieldGoal(ballOn) then
-						scores.cpu = scores.cpu + 3
-						nextBallOn = 25
-					else
-						nextBallOn = flipFieldPosition(ballOn)
-					end
-					possessionOver = true
-					break
-				elseif yardsToGo > 2 or ballOn < 40 then
-					nextBallOn = puntResultBallOn(ballOn)
-					print("  CPU punts it away.")
-					possessionOver = true
-					break
-				end
-				-- else: CPU goes for it, falls through
+				possessionOver = true
+				break
 			end
+			-- decision == "go": falls through to a normal play call below
 		end
 
 		local offenseCategory, defenseCategory
 		if userHasBall then
-			print("  Your play call:")
-			offenseCategory = promptOffenseCategory()
+			offenseCategory = nextUserOffenseCall(zone)
 			defenseCategory = aiChooseDefense(zone)
 		else
 			offenseCategory = aiChooseOffense(zone)
-			print("  Your defensive call:")
-			defenseCategory = promptDefenseCategory()
+			defenseCategory = nextUserDefenseCall(zone)
 		end
 
 		local wasFourthDown = (down == 4)
@@ -475,11 +439,7 @@ for possessionIndex = 1, POSSESSIONS_PER_TEAM * 2 do
 		ballOn = ballOn + result.yards
 		if ballOn >= 100 then
 			print(string.format("  TOUCHDOWN, %s!", offenseName))
-			if userHasBall then
-				scores.user = scores.user + 7
-			else
-				scores.cpu = scores.cpu + 7
-			end
+			if userHasBall then scores.user = scores.user + 7 else scores.cpu = scores.cpu + 7 end
 			nextBallOn = 25
 			possessionOver = true
 			break
@@ -501,15 +461,15 @@ for possessionIndex = 1, POSSESSIONS_PER_TEAM * 2 do
 		end
 	end
 
-	print(string.format("  SCORE -> You: %d   CPU: %d", scores.user, scores.cpu))
+	print(string.format("  SCORE -> %s: %d   %s: %d", userTeam.name, scores.user, cpuTeam.name, scores.cpu))
 end
 
 print("\n==================================================================")
-print(string.format("FINAL SCORE -> You: %d   CPU: %d", scores.user, scores.cpu))
+print(string.format("FINAL SCORE -> %s: %d   %s: %d", userTeam.name, scores.user, cpuTeam.name, scores.cpu))
 if scores.user > scores.cpu then
-	print("You win!")
+	print(userTeam.name .. " win!")
 elseif scores.cpu > scores.user then
-	print("CPU wins.")
+	print(cpuTeam.name .. " win.")
 else
 	print("It's a tie.")
 end
