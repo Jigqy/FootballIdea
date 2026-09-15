@@ -176,9 +176,48 @@ disclosing odds on randomized item purchases.
 - Trading — player-to-player card trading (real economy, harder to keep
   fair/scam-free) vs. account-locked cards?
 
+## Chemistry
+
+Eight named bonds, mirroring the matchup matrix (4 offense, 4 defense), so
+building chemistry means choosing a playstyle identity rather than a
+generic stat bump.
+
+*Offense*
+- **Power Unit** (OL + RB, + TE blocker) → boosts Run
+- **Quick Strike** (QB + slot WR/RB) → boosts Quick Pass
+- **Route Tree** (QB + WR + TE) → boosts Medium Pass
+- **Deep Threat** (QB + speed WR) → boosts Deep Pass
+
+*Defense*
+- **Run Stoppers** (DL + LB) → boosts Stack the Box
+- **Blitz Package** (LB + DL pass-rushers) → boosts Blitz
+- **Lockdown Corners** (CB + S, man specialists) → boosts Man Coverage
+- **Shutdown Zone** (S + LB + CB zone specialists) → boosts Zone Coverage
+
+A team that stacks Power Unit + Run Stoppers plays like a ground-and-pound
+team; one that stacks Deep Threat + Shutdown Zone plays like an air-raid /
+bend-don't-break team. The bonds push a roster toward a coherent identity
+instead of just raising numbers.
+
+**Activation:** checks the active roster pool, not physical adjacency in a
+formation grid (no FIFA-style link web needed). Chemistry is **scaled, not
+binary** — the more qualifying cards (and the higher their rarity) a bond
+has, the bigger its outcome boost. A team with 2 of the 3 Route Tree pieces
+still plays a little better at Medium Pass than a team with none; a full,
+high-rarity set plays a lot better.
+
+Chemistry is purely an **outcome modifier** on the stat-decided matrix
+rolls — it doesn't gate play availability, since that's already handled by
+the personnel-gated plays system. Keeps the two mechanics from overlapping.
+
+**Deferred:** Team/Set bonus (amplified chemistry when linked cards share a
+fictional team tag) — needs multiple fictional team rosters designed up
+front, so it's a later addition once functional chemistry is proven out.
+
 ## Deferred / Open Items
 
 - AI opponent tendency-reading / adaptiveness (explicitly deferred).
-- Ultimate Team chemistry system — next brainstorming pillar.
+- Team/Set chemistry bonus (needs fictional team rosters built first).
+- Currency structure and player trading (see Card Rarity & Packs).
 - Trick-play animation content pipeline (tied to future playbook
   collectibles).
