@@ -214,10 +214,24 @@ the personnel-gated plays system. Keeps the two mechanics from overlapping.
 fictional team tag) — needs multiple fictional team rosters designed up
 front, so it's a later addition once functional chemistry is proven out.
 
+## Roster Construction
+
+**No salary cap.** A stronger (higher-spend) roster is intended to play
+better — pay-to-win is an accepted, intentional part of the monetization
+model, not something to balance away with a budget system.
+
+Implication for later: since roster power can vary a lot between players,
+**matchmaking/tiering** (grouping by roster strength, or a separate ranked
+ladder) becomes important so free/new players still find winnable matches
+— otherwise retention suffers before anyone spends. Filed under the
+social/matchmaking layer, not solved yet.
+
 ## Deferred / Open Items
 
 - AI opponent tendency-reading / adaptiveness (explicitly deferred).
 - Team/Set chemistry bonus (needs fictional team rosters built first).
 - Currency structure and player trading (see Card Rarity & Packs).
+- Matchmaking/tiering to account for no roster cap (see Roster
+  Construction).
 - Trick-play animation content pipeline (tied to future playbook
   collectibles).
