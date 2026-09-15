@@ -245,12 +245,53 @@ New players start entirely against AI, not other players.
   difficulty ladder can start as stat-only (bigger/better AI rosters) and
   later add smarter tendencies once that system is built.
 
+## PvP Structure
+
+- **Ranked ladder runs on Quick Drives** (not full games) — short matches
+  keep queue times low and the format replayable, closer to a ranked
+  card-game match than a full sim.
+- **League Play** uses Full Games (5-min quarters) — private lobbies,
+  friends, tournaments, scheduled league-style PvP. Same engine, different
+  container.
+- **Power-aware matchmaking** — blends skill rating with rough roster power
+  so brackets stay competitive despite no roster cap. Spending still lets
+  a player climb by fielding stronger tools, but matches stay within a
+  bracket rather than pitting new accounts against whales.
+- **Placement matches** immediately after the PvP unlock gate, to seed
+  initial rank.
+- **Seasonal resets** synced to Season Mode's cadence, with rank rewards
+  (packs, cosmetics) at season end, feeding back into the pack economy.
+- Global + friends leaderboards, and spectating for live matches.
+
+## Season Mode Schedule
+
+Matches the real NFL format structurally: **17 games + 1 bye week**, into
+a playoff bracket (Wild Card → Divisional → Championship → Finale) against
+CPU teams of rising difficulty. The schedule *format* (game count, bye
+week, bracket) isn't NFL-protected IP — but per the earlier IP-safety
+note, the teams themselves stay fictional, not real NFL teams/branding.
+
+## Currency & Trading
+
+**Two-tier currency:**
+- **Coach Coins** (soft currency) — earned via Season Mode and PvP wins,
+  dailies/weeklies. Buys Standard/Position packs.
+- **Premium currency** (Robux-purchased, sold in bundles) — buys
+  Premium/Event packs and cosmetics. Standard live-service pattern: lets
+  packs be priced at awkward numbers and currency sold in bundles that
+  nudge slight overspend.
+
+**No player trading**, at launch or planned — not just deferred. Reasons:
+hard to keep scam-free, undercuts the pack economy the game is
+monetized around (players could trade for needs instead of
+pulling/buying), and Roblox's platform trading rules are restrictive
+outside their built-in limited-items system. The existing duplicate-fusion
+system (dupes → upgrade fuel / auto-craft, see Card Rarity & Packs)
+already covers the "bad luck protection" itch trading usually solves.
+
 ## Deferred / Open Items
 
 - AI opponent tendency-reading / adaptiveness (explicitly deferred).
 - Team/Set chemistry bonus (needs fictional team rosters built first).
-- Currency structure and player trading (see Card Rarity & Packs).
-- Matchmaking/tiering to account for no roster cap (see Roster
-  Construction).
 - Trick-play animation content pipeline (tied to future playbook
   collectibles).
