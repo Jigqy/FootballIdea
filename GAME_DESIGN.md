@@ -226,6 +226,25 @@ ladder) becomes important so free/new players still find winnable matches
 — otherwise retention suffers before anyone spends. Filed under the
 social/matchmaking layer, not solved yet.
 
+## Progression: AI-First Onboarding
+
+New players start entirely against AI, not other players.
+
+- **Season Mode** (AI) — a permanent single-player mode, not just a
+  tutorial funnel. Players build a roster via earned packs/currency and
+  play through CPU-controlled teams of increasing strength.
+- **PvP unlock gate** — win a set number of games vs. CPU. Simple,
+  understandable requirement rather than a level/XP curve.
+- Season Mode stays around as permanent content after PvP unlocks (a
+  career/franchise-style mode alongside ranked PvP), not something players
+  age out of.
+- Softens the no-cap/pay-to-win risk flagged earlier: players earn a real
+  roster and learn the play-calling system before ever facing a
+  human/whale opponent in PvP.
+- Reconnects to the deferred AI-adaptiveness item — Season Mode's CPU
+  difficulty ladder can start as stat-only (bigger/better AI rosters) and
+  later add smarter tendencies once that system is built.
+
 ## Deferred / Open Items
 
 - AI opponent tendency-reading / adaptiveness (explicitly deferred).
